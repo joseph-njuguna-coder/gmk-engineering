@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
@@ -38,3 +39,6 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 ## GMK visual refresh
 The visual system has been refreshed toward a Sefar-inspired industrial/editorial direction: oversized typography, strong navy/orange contrast, image-led layouts, generous whitespace, flatter cards, and clearer project storytelling. This is an original implementation, not a copy of Sefar's site.
+=======
+# gmk-engineering
+>>>>>>> ee1bb00438f5ae0b43ddbfc158cd00d4a95de361
