@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Screen</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Poppins:wght@100..900&family=Fira+Code:wght@300..700&family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link id="theme-fonts" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+    <style type="text/tailwindcss">
+      @import "tailwindcss";
+      @theme inline {
+        --color-background: var(--background);
+        --color-foreground: var(--foreground);
+        --color-primary: var(--primary);
+        --color-primary-foreground: var(--primary-foreground);
+        --color-secondary: var(--secondary);
+        --color-secondary-foreground: var(--secondary-foreground);
+        --color-tertiary: var(--tertiary);
+        --color-tertiary-foreground: var(--tertiary-foreground);
+        --color-muted: var(--muted);
+        --color-muted-foreground: var(--muted-foreground);
+        --color-accent: var(--accent);
+        --color-accent-foreground: var(--accent-foreground);
+        --color-destructive: var(--destructive);
+        --color-destructive-foreground: var(--destructive-foreground);
+        --color-card: var(--card);
+        --color-card-foreground: var(--card-foreground);
+        --color-popover: var(--popover);
+        --color-popover-foreground: var(--popover-foreground);
+        --color-border: var(--border);
+        --color-input: var(--input);
+        --color-ring: var(--ring);
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --font-family-sans: var(--font-sans);
+        --font-family-heading: var(--font-heading);
+        --font-family-mono: var(--font-mono);
+        /* Tailwind v4's font namespace is --font-*, NOT --font-family-*.
+         *
+         * Without this line the font-heading utility does not exist at all,
+         * so every h1–h6 the design prompt mandates (font-heading) silently
+         * inherited the body's font-sans. A user could set --font-heading a
+         * dozen times, watch the tool report success, and never see the
+         * typeface change — the "font applied but not reflected" report.
+         *
+         * font-sans and font-mono are Tailwind built-ins and already read
+         * :root, which is why only headings were broken. The fallback chain
+         * keeps themes that never set a heading font rendering the body face
+         * instead of nothing. */
+        --font-heading: var(--font-heading, var(--font-sans, ui-sans-serif, system-ui, sans-serif));
+      }
+
+      /* Every filled surface carries its own text colour.
+       *
+       * Without this, <div class="bg-accent"> inherits --foreground from
+       * <html> — a colour chosen to contrast the PAGE, not the accent fill. On
+       * a dark theme with a bright accent that renders near-white text on
+       * near-white (or near-black on near-black): the invisible text users
+       * report. Pairing each fill with its own foreground makes the readable
+       * result the default instead of something the model has to remember.
+       *
+       * These sit in @layer base deliberately. Any explicit text-* utility is
+       * in @layer utilities and therefore still wins, so an intentional colour
+       * choice is never overridden. The neutral surfaces (background, muted)
+       * are left out: --foreground is already guaranteed readable on those, and
+       * forcing --muted-foreground would wash out headings in muted panels.
+       */
+      @layer base {
+        .bg-card { color: var(--card-foreground); }
+        .bg-popover { color: var(--popover-foreground, var(--card-foreground)); }
+        .bg-primary { color: var(--primary-foreground); }
+        .bg-secondary { color: var(--secondary-foreground); }
+        .bg-accent { color: var(--accent-foreground, var(--foreground)); }
+        .bg-tertiary { color: var(--tertiary-foreground, var(--primary-foreground)); }
+        .bg-destructive { color: var(--destructive-foreground, var(--primary-foreground)); }
+      }
+      :root { --background: #ffffff;
+        --foreground: #737372;
+        --primary: #0089cf;
+        --primary-foreground: #1A1A1A;
+        --secondary: #f7f7f7;
+        --secondary-foreground: #717171;
+        --tertiary: #1a1a2e;
+        --muted: #f7f7f7;
+        --muted-foreground: #727171;
+        --accent: #1a1a2e;
+        --destructive: #ef4444;
+        --card: #f8f9fa;
+        --card-foreground: #737372;
+        --border: #e7e7e7;
+        --input: #e7e7e7;
+        --ring: #0089cf;
+        --radius: 4px;
+        --font-sans: Inter, sans-serif;
+        --font-heading: Inter, sans-serif;
+        --font-mono: JetBrains Mono, monospace;
+        --shadow-offset-x: 0;
+        --shadow-offset-y: 10;
+        --shadow-blur: 30;
+        --shadow-spread: -8;
+        --shadow-color: rgba(15, 23, 42, 0.12);
+        --accent-foreground: #838482;
+        --tertiary-foreground: #838482;
+        --destructive-foreground: #1D1C1C;
+        --primary-text: #0078BD;
+        --secondary-text: #737372;
+        --tertiary-text: #1A1A2E;
+        --accent-text: #1A1A2E;
+        --destructive-text: #DA2D33; }
+    </style>
+    <style>
+      .brand-gradient { background-image: linear-gradient(135deg, var(--primary), var(--accent)); }
+      .shadow-theme {
+        box-shadow:
+          calc(var(--shadow-offset-x, 0) * 1px) calc(var(--shadow-offset-y, 10) * 1px)
+          calc(var(--shadow-blur, 30) * 1px) calc(var(--shadow-spread, -8) * 1px)
+          var(--shadow-color, rgba(15, 23, 42, 0.12));
+      }
+
+      /* Brand colours used as TEXT resolve to a legibility-adjusted variant.
+       *
+       * --primary and friends are tuned to look right as FILLS; painted as text
+       * on the page they are routinely too light — a #16A34A "+8.4%" on a white
+       * card measures 3.3:1. The --*-text tokens are the same hue and chroma
+       * with lightness nudged just far enough to clear AA on the page and card
+       * surfaces, so fills keep the exact brand colour while text becomes
+       * readable.
+       *
+       * This block is intentionally UNLAYERED: unlayered declarations outrank
+       * every cascade layer, so these beat Tailwind's own text-* utilities. The
+       * var() fallbacks leave documents that predate the derived tokens
+       * rendering exactly as before.
+       */
+      .text-primary { color: var(--primary-text, var(--primary)); }
+      .text-secondary { color: var(--secondary-text, var(--secondary)); }
+      .text-tertiary { color: var(--tertiary-text, var(--tertiary)); }
+      .text-accent { color: var(--accent-text, var(--accent)); }
+      .text-destructive { color: var(--destructive-text, var(--destructive)); }
+    </style>
+  </head>
+  <body>
+<html>
+    <head><meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screen</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Poppins:wght@100..900&amp;family=Fira+Code:wght@300..700&amp;family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+    <link id="theme-fonts" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+    <style type="text/tailwindcss">
+      @import "tailwindcss";
+      @theme inline {
+        --color-background: var(--background);
+        --color-foreground: var(--foreground);
+        --color-primary: var(--primary);
+        --color-primary-foreground: var(--primary-foreground);
+        --color-secondary: var(--secondary);
+        --color-secondary-foreground: var(--secondary-foreground);
+        --color-tertiary: var(--tertiary);
+        --color-tertiary-foreground: var(--tertiary-foreground);
+        --color-muted: var(--muted);
+        --color-muted-foreground: var(--muted-foreground);
+        --color-accent: var(--accent);
+        --color-accent-foreground: var(--accent-foreground);
+        --color-destructive: var(--destructive);
+        --color-destructive-foreground: var(--destructive-foreground);
+        --color-card: var(--card);
+        --color-card-foreground: var(--card-foreground);
+        --color-popover: var(--popover);
+        --color-popover-foreground: var(--popover-foreground);
+        --color-border: var(--border);
+        --color-input: var(--input);
+        --color-ring: var(--ring);
+        --radius-sm: calc(var(--radius) - 4px);
+        --radius-md: calc(var(--radius) - 2px);
+        --radius-lg: var(--radius);
+        --font-family-sans: var(--font-sans);
+        --font-family-heading: var(--font-heading);
+        --font-family-mono: var(--font-mono);
+        /* Tailwind v4's font namespace is --font-*, NOT --font-family-*.
+         *
+         * Without this line the font-heading utility does not exist at all,
+         * so every h1–h6 the design prompt mandates (font-heading) silently
+         * inherited the body's font-sans. A user could set --font-heading a
+         * dozen times, watch the tool report success, and never see the
+         * typeface change — the "font applied but not reflected" report.
+         *
+         * font-sans and font-mono are Tailwind built-ins and already read
+         * :root, which is why only headings were broken. The fallback chain
+         * keeps themes that never set a heading font rendering the body face
+         * instead of nothing. */
+        --font-heading: var(--font-heading, var(--font-sans, ui-sans-serif, system-ui, sans-serif));
+      }
+
+      /* Every filled surface carries its own text colour.
+       *
+       * Without this, <div class="bg-accent"> inherits --foreground from
+       * <html> — a colour chosen to contrast the PAGE, not the accent fill. On
+       * a dark theme with a bright accent that renders near-white text on
+       * near-white (or near-black on near-black): the invisible text users
+       * report. Pairing each fill with its own foreground makes the readable
+       * result the default instead of something the model has to remember.
+       *
+       * These sit in @layer base deliberately. Any explicit text-* utility is
+       * in @layer utilities and therefore still wins, so an intentional colour
+       * choice is never overridden. The neutral surfaces (background, muted)
+       * are left out: --foreground is already guaranteed readable on those, and
+       * forcing --muted-foreground would wash out headings in muted panels.
+       */
+      @layer base {
+        .bg-card { color: var(--card-foreground); }
+        .bg-popover { color: var(--popover-foreground, var(--card-foreground)); }
+        .bg-primary { color: var(--primary-foreground); }
+        .bg-secondary { color: var(--secondary-foreground); }
+        .bg-accent { color: var(--accent-foreground, var(--foreground)); }
+        .bg-tertiary { color: var(--tertiary-foreground, var(--primary-foreground)); }
+        .bg-destructive { color: var(--destructive-foreground, var(--primary-foreground)); }
+      }
+      :root { --background: #ffffff;
+        --foreground: #737372;
+        --primary: #0089cf;
+        --primary-foreground: #1A1A1A;
+        --secondary: #f7f7f7;
+        --secondary-foreground: #717171;
+        --tertiary: #1a1a2e;
+        --muted: #f7f7f7;
+        --muted-foreground: #727171;
+        --accent: #1a1a2e;
+        --destructive: #ef4444;
+        --card: #f8f9fa;
+        --card-foreground: #737372;
+        --border: #e7e7e7;
+        --input: #e7e7e7;
+        --ring: #0089cf;
+        --radius: 4px;
+        --font-sans: Inter, sans-serif;
+        --font-heading: Inter, sans-serif;
+        --font-mono: JetBrains Mono, monospace;
+        --shadow-offset-x: 0;
+        --shadow-offset-y: 10;
+        --shadow-blur: 30;
+        --shadow-spread: -8;
+        --shadow-color: rgba(15, 23, 42, 0.12);
+        --accent-foreground: #838482;
+        --tertiary-foreground: #838482;
+        --destructive-foreground: #1D1C1C;
+        --primary-text: #0078BD;
+        --secondary-text: #737372;
+        --tertiary-text: #1A1A2E;
+        --accent-text: #1A1A2E;
+        --destructive-text: #DA2D33; }
+    </style>
+    <style>
+      .brand-gradient { background-image: linear-gradient(135deg, var(--primary), var(--accent)); }
+      .shadow-theme {
+        box-shadow:
+          calc(var(--shadow-offset-x, 0) * 1px) calc(var(--shadow-offset-y, 10) * 1px)
+          calc(var(--shadow-blur, 30) * 1px) calc(var(--shadow-spread, -8) * 1px)
+          var(--shadow-color, rgba(15, 23, 42, 0.12));
+      }
+
+      /* Brand colours used as TEXT resolve to a legibility-adjusted variant.
+       *
+       * --primary and friends are tuned to look right as FILLS; painted as text
+       * on the page they are routinely too light — a #16A34A "+8.4%" on a white
+       * card measures 3.3:1. The --*-text tokens are the same hue and chroma
+       * with lightness nudged just far enough to clear AA on the page and card
+       * surfaces, so fills keep the exact brand colour while text becomes
+       * readable.
+       *
+       * This block is intentionally UNLAYERED: unlayered declarations outrank
+       * every cascade layer, so these beat Tailwind's own text-* utilities. The
+       * var() fallbacks leave documents that predate the derived tokens
+       * rendering exactly as before.
+       */
+      .text-primary { color: var(--primary-text, var(--primary)); }
+      .text-secondary { color: var(--secondary-text, var(--secondary)); }
+      .text-tertiary { color: var(--tertiary-text, var(--tertiary)); }
+      .text-accent { color: var(--accent-text, var(--accent)); }
+      .text-destructive { color: var(--destructive-text, var(--destructive)); }
+    </style>
+  
+  
+</head><body><div class="min-h-screen w-full bg-background flex flex-col relative"><header class="border-b border-border bg-background"><div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-5"><a class="flex items-center gap-3" data-uxm-link="GMK Engineering — Industrial Solutions in Nairobi"><span class="flex h-10 w-10 items-center justify-center bg-primary font-heading text-sm font-bold text-primary-foreground">GMK</span><span class="font-heading text-xl font-bold text-foreground">GMK <span class="text-primary">Engineering</span></span></a><nav class="hidden items-center gap-7 text-sm font-semibold lg:flex"><a data-uxm-link="GMK Engineering — Industrial Solutions in Nairobi" class="text-foreground hover:text-primary">Home</a><a class="text-primary">Insights</a><a data-uxm-link="GMK Engineering — Industrial Solutions in Nairobi" class="text-foreground hover:text-primary">Services</a><a data-uxm-link="GMK Engineering — Industrial Solutions in Nairobi" class="bg-primary px-5 py-3 text-primary-foreground">Send Enquiry</a></nav><button class="flex min-h-11 min-w-11 items-center justify-center border border-border lg:hidden" aria-label="Open menu"><iconify-icon icon="lucide:menu" class="text-xl"></iconify-icon></button></div></header><main><section class="bg-accent py-16 text-primary-foreground"><div class="mx-auto max-w-7xl px-6"><p class="mb-4 text-xs font-bold uppercase tracking-[0.22em] text-accent-foreground">GMK Engineering Insights</p><h1 class="max-w-3xl text-balance font-heading text-4xl font-bold leading-tight md:text-6xl text-accent-foreground">Practical engineering knowledge for Kenya’s industrial operators.</h1><p class="mt-6 max-w-2xl text-pretty text-base leading-relaxed text-foreground/75">Project-ready guidance on milling, fabrication, electrical systems, energy efficiency, and dependable plant maintenance.</p></div></section><section class="border-b border-border bg-card"><div class="mx-auto flex max-w-7xl flex-col gap-5 px-6 py-6 lg:flex-row lg:items-center lg:justify-between"><div class="relative w-full lg:max-w-md"><iconify-icon icon="lucide:search" class="absolute left-4 top-1/2 -translate-y-1/2 text-primary"></iconify-icon><input aria-label="Search engineering insights" placeholder="Search milling, electrical, maintenance..." class="min-h-11 w-full border border-input bg-background py-3 pl-11 pr-4 text-sm text-foreground outline-none focus:border-primary"></div><div class="flex flex-wrap gap-2"><button class="min-h-11 bg-primary px-4 text-sm font-semibold text-primary-foreground">All insights</button><button class="min-h-11 border border-border bg-background px-4 text-sm font-semibold text-foreground">Mill installation</button><button class="min-h-11 border border-border bg-background px-4 text-sm font-semibold text-foreground">Electrical systems</button><button class="min-h-11 border border-border bg-background px-4 text-sm font-semibold text-foreground">Fabrication</button><button class="min-h-11 border border-border bg-background px-4 text-sm font-semibold text-foreground">Maintenance</button></div></div></section><section class="mx-auto w-full max-w-7xl px-6 py-14"><div class="mb-9 flex items-end justify-between gap-6"><div><p class="text-xs font-bold uppercase tracking-[0.18em] text-primary">Latest articles</p><h2 class="mt-3 font-heading text-2xl font-bold text-foreground">Engineering decisions, made clearer.</h2></div><p class="hidden text-sm text-muted-foreground md:block">Showing 6 practical guides</p></div><div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"><article class="group flex flex-col overflow-hidden border border-border bg-card shadow-md"><img src="https://uxmagic.blob.core.windows.net/public/agent-images/gmk-blog-mill-1789332924814-9v0bgcz4xoa.png" alt="Technician inspecting a modern wheat milling line" class="aspect-[16/10] w-full object-cover" width="1536" height="1024"><div class="flex flex-1 flex-col p-6"><div class="mb-4 flex items-center justify-between text-xs font-bold uppercase tracking-widest"><span class="text-primary">Mill installation</span><span class="text-muted-foreground">12 Jun 2026</span></div><h3 class="font-heading text-xl font-bold leading-tight text-foreground">Five checks before commissioning a new maize milling line</h3><p class="mt-3 text-pretty text-sm leading-relaxed text-muted-foreground">A site-ready checklist covering throughput, power loading, dust control, operator training, and acceptance testing.</p><a data-uxm-link="Engineering Insight Article" class="mt-6 inline-flex min-h-11 items-center gap-2 text-sm font-bold text-primary">Read insight <iconify-icon icon="lucide:arrow-right" class="text-lg"></iconify-icon></a></div></article><article class="group flex flex-col overflow-hidden border border-border bg-card shadow-md"><img src="https://uxmagic.blob.core.windows.net/public/agent-images/gmk-blog-panel-1789332938212-oqz6882d4aq.png" alt="Technician testing a motor control panel" class="aspect-[16/10] w-full object-cover" width="1536" height="1024"><div class="flex flex-1 flex-col p-6"><div class="mb-4 flex items-center justify-between text-xs font-bold uppercase tracking-widest"><span class="text-primary">Electrical systems</span><span class="text-muted-foreground">28 May 2026</span></div><h3 class="font-heading text-xl font-bold leading-tight text-foreground">How to specify an MCC panel for reliable factory operations</h3><p class="mt-3 text-pretty text-sm leading-relaxed text-muted-foreground">What Kenyan manufacturers should align on before fabrication: loads, protection, documentation, and future expansion.</p><a data-uxm-link="Engineering Insight Article" class="mt-6 inline-flex min-h-11 items-center gap-2 text-sm font-bold text-primary">Read insight <iconify-icon icon="lucide:arrow-right" class="text-lg"></iconify-icon></a></div></article><article class="group flex flex-col overflow-hidden border border-border bg-card shadow-md"><img src="https://uxmagic.blob.core.windows.net/public/agent-images/gmk-blog-fabrication-1789332951796-flyvdr5oay.png" alt="Welder fabricating a structural steel platform" class="aspect-[16/10] w-full object-cover" width="1536" height="1024"><div class="flex flex-1 flex-col p-6"><div class="mb-4 flex items-center justify-between text-xs font-bold uppercase tracking-widest"><span class="text-primary">Fabrication</span><span class="text-muted-foreground">09 May 2026</span></div><h3 class="font-heading text-xl font-bold leading-tight text-foreground">Designing safer steel access platforms for processing plants</h3><p class="mt-3 text-pretty text-sm leading-relaxed text-muted-foreground">A practical guide to loading, guardrails, corrosion protection, and installation sequencing for industrial platforms.</p><a data-uxm-link="Engineering Insight Article" class="mt-6 inline-flex min-h-11 items-center gap-2 text-sm font-bold text-primary">Read insight <iconify-icon icon="lucide:arrow-right" class="text-lg"></iconify-icon></a></div></article><article class="flex flex-col border border-border bg-background p-6"><span class="mb-6 flex h-11 w-11 items-center justify-center bg-muted text-primary"><iconify-icon icon="lucide:activity" class="text-xl"></iconify-icon></span><p class="text-xs font-bold uppercase tracking-widest text-primary">Energy auditing · 21 Apr 2026</p><h3 class="mt-4 font-heading text-xl font-bold text-foreground">Where factory energy waste hides in compressed-air systems</h3><p class="mt-3 text-sm leading-relaxed text-muted-foreground">Find leaks, pressure losses, and oversized loads before they inflate your monthly power bill.</p><a data-uxm-link="Engineering Insight Article" class="mt-6 inline-flex min-h-11 items-center gap-2 text-sm font-bold text-primary">Read insight <iconify-icon icon="lucide:arrow-right" class="text-lg"></iconify-icon></a></article><article class="flex flex-col border border-border bg-background p-6"><span class="mb-6 flex h-11 w-11 items-center justify-center bg-muted text-primary"><iconify-icon icon="lucide:settings" class="text-xl"></iconify-icon></span><p class="text-xs font-bold uppercase tracking-widest text-primary">Maintenance · 04 Apr 2026</p><h3 class="mt-4 font-heading text-xl font-bold text-foreground">Planning shutdown maintenance without losing production control</h3><p class="mt-3 text-sm leading-relaxed text-muted-foreground">A structured approach to scoping shutdown work, parts readiness, safety permits, and restart verification.</p><a data-uxm-link="Engineering Insight Article" class="mt-6 inline-flex min-h-11 items-center gap-2 text-sm font-bold text-primary">Read insight <iconify-icon icon="lucide:arrow-right" class="text-lg"></iconify-icon></a></article><article class="flex flex-col border border-border bg-background p-6"><span class="mb-6 flex h-11 w-11 items-center justify-center bg-muted text-primary"><iconify-icon icon="lucide:package" class="text-xl"></iconify-icon></span><p class="text-xs font-bold uppercase tracking-widest text-primary">Plant operations · 18 Mar 2026</p><h3 class="mt-4 font-heading text-xl font-bold text-foreground">Choosing a packing system that keeps up with the mill</h3><p class="mt-3 text-sm leading-relaxed text-muted-foreground">Match weighing accuracy, bag formats, output speed, and maintenance needs before you invest.</p><a data-uxm-link="Engineering Insight Article" class="mt-6 inline-flex min-h-11 items-center gap-2 text-sm font-bold text-primary">Read insight <iconify-icon icon="lucide:arrow-right" class="text-lg"></iconify-icon></a></article></div></section><section class="bg-secondary"><div class="mx-auto flex max-w-7xl flex-col items-start justify-between gap-6 px-6 py-12 md:flex-row md:items-center"><div><p class="text-xs font-bold uppercase tracking-[0.18em] text-secondary-foreground">Need project-specific guidance?</p><h2 class="mt-3 font-heading text-2xl font-bold text-foreground">Talk to the engineers who will deliver it.</h2></div><a data-uxm-link="GMK Engineering — Industrial Solutions in Nairobi" class="inline-flex min-h-11 items-center gap-2 bg-primary px-6 py-3 text-sm font-bold text-primary-foreground">Send an enquiry <iconify-icon icon="lucide:arrow-right" class="text-lg"></iconify-icon></a></div></section></main><footer class="bg-accent text-primary-foreground"><div class="mx-auto flex max-w-7xl flex-col justify-between gap-6 px-6 py-10 md:flex-row"><div><p class="font-heading text-xl font-bold text-accent-foreground">GMK <span class="text-accent-foreground">Engineering</span></p><p class="mt-2 text-sm text-foreground/65">Industrial solutions for Kenya’s growth.</p></div><div class="text-sm text-primary-foreground/65"><p class="text-accent-foreground">49 Thika Road, Nairobi, Kenya</p><p class="mt-2 text-accent-foreground">+254 727 944 692 · info@gmkengineering.co.ke</p></div></div></footer></div>
+</body></html>
+</body></html>
