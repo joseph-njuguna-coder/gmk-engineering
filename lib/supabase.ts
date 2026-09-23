@@ -26,13 +26,20 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
  * MUST only ever be used on the server (Server Components, Server Actions).
  * Never import this into a client component.
  */
-if (!supabaseServiceRoleKey) {
+
+// Only throw an error if we are actively running a production server, 
+// bypassing it during the static build phase on Cloudflare.
+if (!supabaseServiceRoleKey && process.env.NODE_ENV === 'production' && process.env.NEXT_PHASE === 'phase-production-server') {
   throw new Error("Missing SUPABASE_SERVICE_ROLE_KEY in environment.");
 }
 
-export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey, {
-  auth: {
-    persistSession: false,
-    autoRefreshToken: false,
-  },
-});
+export const supabaseAdmin = createClient(
+  supabaseUrl, 
+  supabaseServiceRoleKey || supabaseAnonKey, 
+  {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  }
+);
