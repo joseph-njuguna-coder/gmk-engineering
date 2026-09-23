@@ -63,6 +63,7 @@ export async function loginAction(
     return { error: `Server error during login: ${err.message}` };
   }
 
+  // Moved outside try/catch so the cookie commits before redirecting
   redirect(ADMIN_HOME_PATH);
 }
 
