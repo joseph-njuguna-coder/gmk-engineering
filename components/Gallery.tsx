@@ -17,7 +17,7 @@ const categories = [
 export interface GalleryItem {
   id: string;
   title: string;
-  category: string;
+  category: string | null; // Updated to allow null from database/lib
   image_url: string;
   created_at?: string;
 }
@@ -96,7 +96,7 @@ export default function Gallery({ items }: { items: GalleryItem[] }) {
                         SYS // 0{index + 1}
                       </span>
                       <span className="bg-black/40 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider backdrop-blur-sm">
-                        {item.category}
+                        {item.category ?? "Uncategorized"}
                       </span>
                     </div>
                   </div>
@@ -138,7 +138,7 @@ export default function Gallery({ items }: { items: GalleryItem[] }) {
                 ARCHIVE RECORD
               </span>
               <span className="font-mono text-xs uppercase tracking-wider text-[var(--gmk-ink)]/50">
-                [{selectedImage.category}]
+                [{selectedImage.category ?? "Uncategorized"}]
               </span>
             </div>
 
