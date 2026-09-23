@@ -43,19 +43,25 @@ export async function loginAction(
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
-  const key = String(formData.get("accessKey") ?? "").trim();
-  if (!key || !isAdminToken(key)) {
-    return { error: "Invalid admin access key. Please try again." };
-  }
+  try {
+    const key = String(formData.get("accessKey") ?? "").trim();
+    if (!key || !isAdminToken(key)) {
+      return { error: "Invalid admin access key. Please try again." };
+    }
 
-  const store = await cookies();
-  store.set(ADMIN_COOKIE, adminToken(), {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: ADMIN_SESSION_MAX_AGE,
-  });
+    const store = await cookies();
+    store.set(ADMIN_COOKIE, adminToken(), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: ADMIN_SESSION_MAX_AGE,
+    });
+  } catch (err: any) {
+    // Captures unexpected execution errors and prints them to Netlify function logs
+    console.error("Login action critical error:", err.message);
+    return { error: `Server error during login: ${err.message}` };
+  }
 
   redirect(ADMIN_HOME_PATH);
 }
